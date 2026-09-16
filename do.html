@@ -39,9 +39,9 @@
     <h2>I want to&hellip;</h2>
     <ol>
       <li><a href="#load-a-catalog">load a catalog</a></li>
-      <li class="is-sub"><a href="#load-finding">finding</a></li>
-      <li class="is-sub"><a href="#load-basic">opening</a></li>
-      <li class="is-sub"><a href="#load-columns">picking columns</a></li>
+      <li class="is-sub"><a href="#load-finding">find catalogs</a></li>
+      <li class="is-sub"><a href="#load-basic">open a catalog</a></li>
+      <li class="is-sub"><a href="#load-columns">pick columns</a></li>
       <li><a href="#go-faster">go faster</a></li>
       <li class="is-sub"><a href="#faster-subset">cut it down first</a></li>
       <li class="is-sub"><a href="#faster-columns">ask for fewer columns</a></li>
@@ -83,7 +83,7 @@
     <section class="section" id="load-a-catalog">
       <h2>load a catalog<a class="anchor" href="#load-a-catalog">#</a></h2>
 
-      <h3 id="load-finding">finding</h3>
+      <h3 id="load-finding">find catalogs</h3>
       <p><a href="https://data.lsdb.io/">data.lsdb.io</a> is the catalog browser: Gaia, ZTF, SDSS,
          2MASS, DES, and more, each with its row count, size on disk, and a copy-paste URL.
          Catalogs are mirrored in several regions &mdash; grab the one nearest you, and prefer an
@@ -96,7 +96,7 @@
       </div>
 
 
-      <h3 id="load-basic">opening</h3>
+      <h3 id="load-basic">open a catalog</h3>
       <p><code>open_catalog</code> reads the catalog's metadata and nothing else. You get back a
          <code>Catalog</code> that knows its columns, types, and partitioning, but holds no rows.</p>
 
@@ -127,7 +127,7 @@ ztf</code></pre>
       </div>
 
 
-      <h3 id="load-columns">picking columns</h3>
+      <h3 id="load-columns">pick columns</h3>
       <p>Every catalog defines a set of <em>default columns</em>, loaded when you don't ask for
          specific ones. That default exists to stop you accidentally pulling two hundred columns
          across the network. Name what you need and the rest is never read.</p>
@@ -177,7 +177,7 @@ gaia = gaia.cone_search(ra=180.0, dec=10.0, radius_arcsec=3600)
          <code>polygon_search</code>, <code>moc_search</code>, and <code>order_search</code>.</p>
 
       <h3 id="faster-columns">ask for fewer columns</h3>
-      <p>Covered up in <a href="#load-columns">picking columns</a>, but it belongs here too. It is
+      <p>Covered up in <a href="#load-columns">pick columns</a>, but it belongs here too. It is
          the cheapest speed-up to apply &mdash; one keyword argument, no restructuring &mdash; and
          unselected columns are never read at all.</p>
 
