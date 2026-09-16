@@ -46,11 +46,12 @@
       <li class="is-sub"><a href="#hats-on-disk">What it looks like on disk</a></li>
       <li><a href="#what-is-a-collection">What is a Catalog Collection?</a></li>
       <li><a href="#what-is-nested">What is a nested column?</a></li>
-      <li><a href="#nothing-happening">Why is nothing happening?</a></li>
-      <li class="is-sub"><a href="#nothing-kernel">Why did my kernel die?</a></li>
       <li><a href="#download">Do I need to download the data?</a></li>
-      <li><a href="#pandas">How does this relate to pandas?</a></li>
+      <li><a href="#pandas">How does this relate to Pandas?</a></li>
       <li><a href="#ecosystem">Which package do I need?</a></li>
+      <li><a href="#what-went-wrong">What went wrong?</a></li>
+      <li class="is-sub"><a href="#nothing-happening">Why is nothing happening?</a></li>
+      <li class="is-sub"><a href="#nothing-kernel">Why did my kernel die?</a></li>
       <li><a href="#more-help">Don't see your question?</a></li>
     </ol>
   </nav>
@@ -66,19 +67,18 @@
     <section class="section" id="what-can-i-do">
       <h2>What can I do with LSDB?<a class="anchor" href="#what-can-i-do">#</a></h2>
 
-      <p>LSDB is for analysing sky catalogs that are too big to download and too big to hold in
-         memory &mdash; hundreds of millions to billions of rows. Four things it is genuinely good
-         at:</p>
+      <p>LSDB is for analyzing sky catalogs that are too big to download and too big to hold in
+         memory (think: hundreds of millions to billions of rows). With LSDB you can:</p>
 
       <ul>
-        <li><strong>Open a survey catalog without downloading it.</strong> You get the columns and
-            the sky you ask for, and nothing else.</li>
-        <li><strong>Cut it down</strong> by region of sky, by column, or by a filter expression
-            &mdash; before any data is read.</li>
-        <li><strong>Cross-match against another survey</strong>, at whatever scale, without
-            writing the partition-matching logic yourself.</li>
-        <li><strong>Run your own function over the whole sky in parallel</strong>, then write the
-            result back out as a catalog of your own.</li>
+        <li><strong>Read a catalog you never downloaded.</strong> You get only the columns and the
+            region of sky you ask for.</li>
+        <li><strong>Cut a billion rows down to something workable.</strong> Filter by region, by
+            column, or by expression, before any data is read.</li>
+        <li><strong>Cross-match against another survey.</strong> LSDB pairs up overlapping tiles
+            for you, at any scale.</li>
+        <li><strong>Run your own function over the whole sky.</strong> It runs in parallel across
+            partitions, and the result can be written back out as a catalog of your own.</li>
       </ul>
 
       <p>A whole workflow is usually one chain, and none of it reads data until you ask:</p>
@@ -118,7 +118,7 @@ result = (
     <section class="section" id="why-hats">
       <h2>Why use HATS and LSDB?<a class="anchor" href="#why-hats">#</a></h2>
 
-      <p>Because of one awkward fact: the interesting catalogs no longer fit anywhere convenient.
+      <p>As data sizes grow, new and interesting catalogs no longer fit anywhere convenient.
          Gaia DR3 is about 1.8 billion rows. You cannot download it before lunch, and you cannot
          load it into memory at all.</p>
 
@@ -126,7 +126,7 @@ result = (
          need before you know. A cone-search service is excellent for a hundred objects and
          hopeless for ten million. Neither lets you ask a question of the <em>whole</em> catalog.</p>
 
-      <p>HATS and LSDB take a different route, and it rests on one idea:
+      <p>HATS and LSDB take a different route, built on one idea:
          <strong>objects near each other on the sky live in the same file</strong>. Everything
          follows from that.</p>
 
@@ -146,7 +146,7 @@ result = (
          is, and what <a href="#ecosystem">hats-import</a> does for data of your own.</p>
 
       <div class="links">
-        <a href="https://docs.lsdb.io/en/stable/tutorials/performance.html">Performance guide</a>
+        <a href="https://docs.lsdb.io/en/stable/tutorials/performance.html">Benchmarks: 1.2B &times; 1.8B rows</a>
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/small_scale.html">Notebook: working at small scale</a>
       </div>
     </section>
@@ -154,7 +154,7 @@ result = (
     <section class="section" id="what-is-hats">
       <h2>What is HATS?<a class="anchor" href="#what-is-hats">#</a></h2>
 
-      <p><strong>HATS</strong> &mdash; Hierarchical Adaptive Tiling Scheme &mdash; is the file format
+      <p><strong>HATS</strong>, or Hierarchical Adaptive Tiling Scheme, is the file format
          LSDB reads. It is a way of splitting a sky catalog into files such that
          <em>objects near each other on the sky end up in the same file</em>.</p>
 
@@ -165,7 +165,7 @@ result = (
 
 
       <h3 id="hats-adaptive">Why adaptive tiling?</h3>
-      <p>Sky catalogs are wildly uneven &mdash; the Galactic plane holds orders of magnitude more
+      <p>Sky catalogs are wildly uneven: the Galactic plane holds orders of magnitude more
          sources than the poles. Tiling at one fixed order would give you some files with a few
          thousand rows and others with tens of millions.</p>
       <p>So HATS varies the order across the sky: dense regions get subdivided further, sparse
@@ -286,15 +286,14 @@ result = (
         </table>
       </div>
 
-      <p>The practical difference is one line. Open a collection and the margin arrives attached at
-         <code>.margin</code>; open a plain catalog and you must supply <code>margin_cache</code>
-         yourself, or quietly go without one.</p>
+      <p>So: if you open a collection, the margin arrives attached at <code>.margin</code>. If you 
+        open a plain catalog, you must supply <code>margin_cache</code> yourself, or quietly go without 
+        one.</p>
 
       <div class="callout callout--warn">
-        <span class="callout__title">&#9888; Going without a margin is not an error</span>
+        <span class="callout__title">&#9888; Skipping the margin is an error LSDB won't catch</span>
         <p>LSDB warns, but it will not stop you, and a margin-less cross-match returns results that
-           look entirely reasonable while being wrong along every partition edge. If you take one
-           thing from this page, take this one. There is more detail, and the fix, in
+           look entirely reasonable while being wrong along every partition edge. There is more detail, and the fix, in
            <a href="do.html#crossmatch-margins">Do</a>.</p>
       </div>
 
@@ -308,7 +307,7 @@ result = (
     <section class="section" id="what-is-nested">
       <h2>What is a nested column?<a class="anchor" href="#what-is-nested">#</a></h2>
 
-      <p>Some data is one measurement per object &mdash; a position, a magnitude. Some is
+      <p>Some data is one measurement per object (e.g. a position, a magnitude). Some is
          <em>many</em> per object: a light curve, a set of detections, a spectrum. A nested column
          holds that second kind, by putting a whole sub-table inside a single cell.</p>
 
@@ -372,11 +371,6 @@ result = (
           million objects stays a million-row problem rather than a hundred-million-row one.</figcaption>
       </figure>
 
-      <p>A third shape sits in between and trips people up: <em>list columns</em>, where each cell
-         holds a bare array. ZTF DR22 ships light curves that way. Lists carry the values but not
-         the structure, so LSDB can turn them into a nested column with
-         <code>nest_lists</code> &mdash; after which the fields have names and can be worked with
-         as a table.</p>
 
       <div class="links">
         <a href="do.html#nested">Recipes for nested data</a>
@@ -385,68 +379,22 @@ result = (
       </div>
     </section>
 
-    <section class="section" id="nothing-happening">
-      <h2>Why is nothing happening?<a class="anchor" href="#nothing-happening">#</a></h2>
-
-      <p>Because nothing is supposed to be happening yet. LSDB is <em>lazy</em>: each operation
-         records what you want and returns immediately. No file is opened, no row is read. You are
-         building a plan, not running one.</p>
-
-      <p>That is why <code>open_catalog</code> on a billion-row survey returns instantly, and why
-         a cross-match of two catalogs takes no time at all until the moment you ask for the
-         answer.</p>
-
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th>Returns instantly</th><th>Actually runs the work</th></tr></thead>
-          <tbody>
-            <tr><td>open_catalog</td><td>compute()</td></tr>
-            <tr><td>cone_search, query, crossmatch</td><td>head(), tail()</td></tr>
-            <tr><td>map_partitions, map_rows</td><td>len()</td></tr>
-            <tr><td>columns, dtypes, npartitions</td><td>plot_points(), plot_pixels()</td></tr>
-            <tr><td>estimate_size()</td><td>write_catalog()</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p>On <a href="do.html">Do</a>, anything in the right-hand column is tagged
-         <span class="badge badge--hot">&#9889; triggers computation</span>.</p>
-
-      <h3 id="nothing-kernel">Why did my kernel die?</h3>
-      <p>The same reason, from the other side. <code>compute()</code> means "give me all of this,
-         in memory, now". If the catalog is a billion rows, that request is not slow, it is
-         impossible &mdash; and Python is killed for asking.</p>
-
-      <p>Three habits avoid it entirely:</p>
-      <ul>
-        <li><strong>Ask what it would cost first.</strong> <code>estimate_size()</code> prints the
-            expected memory without reading any data.</li>
-        <li><strong>Use <code>head()</code> to look.</strong> Looking at values and materialising
-            a result are different jobs.</li>
-        <li><strong>Cut down before computing.</strong> A cone search first, the full sky later.</li>
-      </ul>
-
-      <p>If work is genuinely running and you want to see it, start a
-         <a href="do.html#faster-dask">Dask client</a> &mdash; the dashboard shows exactly which
-         partitions are in flight and how much memory each worker is holding.</p>
-
-      <div class="links">
-        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/lazy_operations.html">Notebook: lazy operations</a>
-        <a href="https://docs.lsdb.io/en/stable/tutorials/dask-messages-guide.html">Decoding alarming Dask messages</a>
-      </div>
-    </section>
-
     <section class="section" id="download">
       <h2>Do I need to download the data?<a class="anchor" href="#download">#</a></h2>
 
-      <p>No &mdash; and for most catalogs you should not try. LSDB reads HATS catalogs directly
+      <p>No, and for most catalogs you should not try. LSDB reads HATS catalogs directly
          from <code>https://</code> and <code>s3://</code> endpoints, fetching only the pieces your
          workflow actually touches.</p>
 
-      <p>Two things make that work. Because the catalog is tiled by sky position, a spatial filter
-         eliminates whole files before anything is opened. And because the files are parquet, the
-         reader pulls only the columns you named, using HTTP range requests rather than downloading
-         each file whole.</p>
+      <p>Two things make that work:
+         <ul>
+           <li>Because the catalog is tiled by sky position, a spatial filter
+             (e.g. a cone search) eliminates whole files before anything is opened.</li>
+           <li>And because the files 
+             are parquet, the reader pulls only the columns you named, using HTTP range requests rather 
+             than downloading each file whole.</li>
+         </ul>
+       </p>
 
       <p>So <code>columns=[...]</code> and a cone search are not merely tidy &mdash; they are what
          keeps the transfer small enough to work over conference wifi.</p>
@@ -455,12 +403,13 @@ result = (
         <span class="callout__title">The unit of reading is a partition</span>
         <p>Even one row means opening the file that contains it. Work that is scattered randomly
            across the sky is therefore expensive, no matter how few rows it returns, whereas work
-           concentrated in one region is cheap. Spatially coherent access is the whole game.</p>
+           concentrated in one region is cheap. Spatially coherent access is the name of the game
+           when working with HATS catalogs.</p>
       </div>
 
-      <p>A local copy is worth it when you are running the same heavy workflow repeatedly, or when
-         your cluster already hosts a mirror &mdash; in which case point LSDB at the local path and
-         nothing else changes. Otherwise, reading remotely is the default for a reason.</p>
+      <p>A local copy can be worth it when you are running the same heavy workflow repeatedly, or when
+         your cluster already hosts a mirror. In this case, you can point LSDB at the local path and
+         nothing else changes.</p>
 
       <div class="links">
         <a href="do.html#load-columns">Picking columns</a>
@@ -470,9 +419,9 @@ result = (
     </section>
 
     <section class="section" id="pandas">
-      <h2>How does this relate to pandas?<a class="anchor" href="#pandas">#</a></h2>
+      <h2>How does this relate to Pandas?<a class="anchor" href="#pandas">#</a></h2>
 
-      <p>Closely, and deliberately. A <code>Catalog</code> is meant to feel like a dataframe you
+      <p>A <code>Catalog</code> is meant to feel like a dataframe you
          have not run yet, and <code>compute()</code> hands you a real one: a nested-pandas
          <code>NestedFrame</code>, which is a subclass of <code>pandas.DataFrame</code>. Anything
          you know how to do to a dataframe works on the result.</p>
@@ -504,7 +453,7 @@ frame.index.name                  # '_healpix_29'</code></pre>
         </table>
       </div>
 
-      <p>The habit that transfers worst is reaching for a global view &mdash; sorting the whole
+      <p>The habit that transfers worst is reaching for a global view: sorting the whole
          catalog, or indexing into an arbitrary row. Those assume everything is in memory at once,
          which is exactly the assumption LSDB is built to avoid. Filter first, compute second, and
          be ordinary pandas from there.</p>
@@ -518,7 +467,7 @@ frame.index.name                  # '_healpix_29'</code></pre>
     <section class="section" id="ecosystem">
       <h2>Which package do I need?<a class="anchor" href="#ecosystem">#</a></h2>
 
-      <p>Four names, overlapping enough to be confusing. They divide up cleanly once you see the
+      <p>There are four main packages in the LSDB ecosystem. They divide up cleanly once you see the
          split: one is a file format, one analyses data in it, one creates it, and one is the
          table type underneath.</p>
 
@@ -527,19 +476,19 @@ frame.index.name                  # '_healpix_29'</code></pre>
           <thead><tr><th>Name</th><th>What it is</th><th>You touch it when&hellip;</th></tr></thead>
           <tbody>
             <tr>
-              <td><a href="https://hats.readthedocs.io/en/stable/">HATS</a></td>
-              <td>The file format &mdash; how a catalog is tiled and written &mdash; plus the
+              <td>HATS (<a href="https://hats.readthedocs.io/en/stable/">hats</a>)</td>
+              <td>The file format (how a catalog is tiled and written) plus the
                   library that reads and describes it.</td>
               <td>Rarely, directly. LSDB uses it on your behalf.</td>
             </tr>
             <tr>
-              <td><a href="https://docs.lsdb.io">LSDB</a></td>
+              <td>LSDB (<a href="https://docs.lsdb.io">lsdb</a>)</td>
               <td>The analysis library: open, filter, cross-match, map, write.</td>
               <td>Almost always. This is the one you import.</td>
             </tr>
             <tr>
               <td><a href="https://hats-import.readthedocs.io/en/stable/">hats-import</a></td>
-              <td>The converter, turning your own catalog into HATS.</td>
+              <td>The converter for turning your own catalog into HATS.</td>
               <td>When the data you want isn't published as HATS yet.</td>
             </tr>
             <tr>
@@ -551,12 +500,71 @@ frame.index.name                  # '_healpix_29'</code></pre>
         </table>
       </div>
 
-      <p>For a hack day the answer is almost always just <code>pip install lsdb</code>. The rest
-         arrive as dependencies, and you meet them only when you need them.</p>
+      <p>For a hack day, the answer is almost always just <code>pip install lsdb</code>. This will bundle 
+        in <code>hats</code> and <code>nested-pandas</code> as dependencies, and you meet them only when you need them.</p>
 
       <div class="links">
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/import_catalogs.html">Notebook: importing your own catalog</a>
         <a href="https://data.lsdb.io/">Catalogs already published as HATS</a>
+      </div>
+    </section>
+
+    <section class="section" id="what-went-wrong">
+      <h2>What went wrong?<a class="anchor" href="#what-went-wrong">#</a></h2>
+
+      <h3 id="nothing-happening">Why is nothing happening?</h3>
+
+      <p>Probably because nothing is supposed to be happening yet. LSDB is <em>lazy</em>: each operation
+         records what you want and returns immediately. No file is opened, no row is read. You are
+         building a plan, not running one.</p>
+
+      <p>That is why <code>open_catalog</code> on a billion-row survey returns instantly, and why
+         a cross-match of two catalogs takes no time at all until the moment you ask for the
+         answer.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Operation</th><th>When it runs</th></tr></thead>
+          <tbody>
+            <tr><td><code>open_catalog</code>, <code>cone_search</code>, <code>query</code>,
+                    <code>crossmatch</code>, <code>map_partitions</code>, <code>map_rows</code></td>
+                <td>Never &mdash; it builds a plan</td></tr>
+            <tr><td><code>columns</code>, <code>npartitions</code>, <code>estimate_size()</code></td>
+                <td>Immediately, but from metadata only &mdash; no rows are read</td></tr>
+            <tr><td><code>head()</code>, <code>tail()</code></td>
+                <td>Reads a few partitions</td></tr>
+            <tr><td><code>compute()</code>, <code>len()</code>, <code>plot_points()</code>,
+                    <code>write_catalog()</code></td>
+                <td>Reads everything you asked for</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>"Instant" and "cheap" are not the same as "lazy": the second row runs straight away, it
+         just never touches your data. On <a href="do.html">Do</a>, any snippet that reads rows is
+         tagged <span class="badge badge--hot">&#9889; triggers computation</span>.</p>
+
+      <h3 id="nothing-kernel">Why did my kernel die?</h3>
+      <p>The same reason, from the other side. <code>compute()</code> means "give me all of this,
+         in memory, now". If the catalog is a billion rows, that request is not slow, it is
+         impossible &mdash; and Python is killed for asking.</p>
+
+      <p>Three habits avoid it entirely:</p>
+      <ul>
+        <li><strong>Ask what it would cost first.</strong> <code>estimate_size()</code> prints the
+            expected memory without reading any data.</li>
+        <li><strong>Use <code>head()</code> to look.</strong> Looking at values and materialising
+            a result are different jobs.</li>
+        <li><strong>Cut down before computing.</strong> A cone search first, the full sky later.</li>
+      </ul>
+
+      <p>If work is genuinely running and you want to see it, start a
+         <a href="do.html#faster-dask">Dask client</a> &mdash; the dashboard shows exactly which
+         partitions are in flight and how much memory each worker is holding.</p>
+
+      <div class="links">
+        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/lazy_operations.html">Notebook: lazy operations</a>
+        <a href="https://docs.lsdb.io/en/stable/tutorials/dask-messages-guide.html">Decoding alarming Dask messages</a>
       </div>
     </section>
 
@@ -565,7 +573,7 @@ frame.index.name                  # '_healpix_29'</code></pre>
       <p>The LINCC Frameworks team is friendly and genuinely wants to hear from you &mdash;
          especially if you have a gnarly dataset.</p>
       <ul>
-        <li><strong>Drop-in office hours</strong>, Fridays 10&ndash;11am US Pacific. Bring whatever
+        <li><strong>Drop-in office hours</strong>, Fridays 10&ndash;11am US Pacific. Bring a problem
             you're stuck on, or just work alongside the people who build this.</li>
         <li><strong>Slack:</strong> <a href="https://lsstc.slack.com/archives/C04610PQW9F">#lincc-frameworks-lsdb</a>
             on LSSTC Slack, where most day-to-day discussion happens.</li>
