@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Do — LSDB Field Guide</title>
+<title>Do • LSDB Field Guide</title>
 <meta name="description" content="Short, copy-pasteable recipes for common LSDB tasks: loading catalogs, crossmatching, and getting results fast.">
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -38,37 +38,37 @@
   <nav class="sidebar" aria-label="On this page">
     <h2>I want to&hellip;</h2>
     <ol>
-      <li><a href="#load-a-catalog">load a catalog</a></li>
-      <li class="is-sub"><a href="#load-finding">find catalogs</a></li>
-      <li class="is-sub"><a href="#load-basic">open a catalog</a></li>
-      <li class="is-sub"><a href="#load-columns">pick columns</a></li>
-      <li><a href="#go-faster">go faster</a></li>
-      <li class="is-sub"><a href="#faster-subset">cut it down first</a></li>
-      <li class="is-sub"><a href="#faster-columns">ask for fewer columns</a></li>
-      <li class="is-sub"><a href="#faster-dask">start a Dask client</a></li>
-      <li class="is-sub"><a href="#faster-region">read the nearest copy</a></li>
-      <li><a href="#examine">examine the catalog</a></li>
-      <li class="is-sub"><a href="#examine-head">look at a few rows</a></li>
-      <li class="is-sub"><a href="#examine-size">find out how big it is</a></li>
-      <li class="is-sub"><a href="#examine-stats">check column statistics</a></li>
-      <li class="is-sub"><a href="#examine-partition">use one partition</a></li>
-      <li class="is-sub"><a href="#examine-plot">see where the data is</a></li>
-      <li><a href="#modify">modify the catalog</a></li>
-      <li class="is-sub"><a href="#modify-search">select a region of sky</a></li>
-      <li class="is-sub"><a href="#modify-query">filter rows</a></li>
-      <li class="is-sub"><a href="#modify-map">apply your own function</a></li>
-      <li><a href="#nested">work with nested data</a></li>
-      <li class="is-sub"><a href="#nested-make">nest list columns</a></li>
-      <li class="is-sub"><a href="#nested-look">look inside one</a></li>
-      <li class="is-sub"><a href="#nested-map">get one value per object</a></li>
-      <li><a href="#crossmatch">crossmatch</a></li>
-      <li class="is-sub"><a href="#crossmatch-basic">match two catalogs</a></li>
-      <li class="is-sub"><a href="#crossmatch-margins">not get wrong answers</a></li>
-      <li class="is-sub"><a href="#crossmatch-how">keep unmatched rows</a></li>
-      <li class="is-sub"><a href="#crossmatch-custom">use my own algorithm</a></li>
-      <li><a href="#save">save my results</a></li>
-      <li class="is-sub"><a href="#save-compute">pull it into pandas</a></li>
-      <li class="is-sub"><a href="#save-write">write a HATS catalog</a></li>
+      <li><a href="#load-a-catalog">Load a catalog</a></li>
+      <li class="is-sub"><a href="#load-finding">Find catalogs</a></li>
+      <li class="is-sub"><a href="#load-basic">Open a catalog</a></li>
+      <li class="is-sub"><a href="#load-columns">Pick columns</a></li>
+      <li><a href="#go-faster">Go faster</a></li>
+      <li class="is-sub"><a href="#faster-subset">Cut it down first</a></li>
+      <li class="is-sub"><a href="#faster-columns">Ask for fewer columns</a></li>
+      <li class="is-sub"><a href="#faster-dask">Start a Dask client</a></li>
+      <li class="is-sub"><a href="#faster-region">Read the nearest copy</a></li>
+      <li><a href="#examine">Examine the catalog</a></li>
+      <li class="is-sub"><a href="#examine-head">Look at a few rows</a></li>
+      <li class="is-sub"><a href="#examine-size">Find out how big it is</a></li>
+      <li class="is-sub"><a href="#examine-stats">Check column statistics</a></li>
+      <li class="is-sub"><a href="#examine-partition">Use one partition</a></li>
+      <li class="is-sub"><a href="#examine-plot">See where the data is</a></li>
+      <li><a href="#modify">Modify the catalog</a></li>
+      <li class="is-sub"><a href="#modify-search">Select a region of sky</a></li>
+      <li class="is-sub"><a href="#modify-query">Filter rows</a></li>
+      <li class="is-sub"><a href="#modify-map">Apply your own function</a></li>
+      <li><a href="#nested">Work with nested data</a></li>
+      <li class="is-sub"><a href="#nested-make">Nest list columns</a></li>
+      <li class="is-sub"><a href="#nested-look">Look inside one</a></li>
+      <li class="is-sub"><a href="#nested-map">Get one value per object</a></li>
+      <li><a href="#crossmatch">Crossmatch</a></li>
+      <li class="is-sub"><a href="#crossmatch-basic">Match two catalogs</a></li>
+      <li class="is-sub"><a href="#crossmatch-margins">Not get wrong answers</a></li>
+      <li class="is-sub"><a href="#crossmatch-how">Keep unmatched rows</a></li>
+      <li class="is-sub"><a href="#crossmatch-custom">Use my own algorithm</a></li>
+      <li><a href="#save">Save my results</a></li>
+      <li class="is-sub"><a href="#save-compute">Pull it into pandas</a></li>
+      <li class="is-sub"><a href="#save-write">Write a HATS catalog</a></li>
     </ol>
   </nav>
 
@@ -81,9 +81,9 @@
     </div>
 
     <section class="section" id="load-a-catalog">
-      <h2>load a catalog<a class="anchor" href="#load-a-catalog">#</a></h2>
+      <h2>Load a catalog<a class="anchor" href="#load-a-catalog">#</a></h2>
 
-      <h3 id="load-finding">find catalogs</h3>
+      <h3 id="load-finding">Find catalogs</h3>
       <p><a href="https://data.lsdb.io/">data.lsdb.io</a> is the catalog browser: Gaia, ZTF, SDSS,
          2MASS, DES, and more, each with its row count, size on disk, and a copy-paste URL.
          Catalogs are mirrored in several regions &mdash; grab the one nearest you, and prefer an
@@ -96,7 +96,7 @@
       </div>
 
 
-      <h3 id="load-basic">open a catalog</h3>
+      <h3 id="load-basic">Open a catalog</h3>
       <p><code>open_catalog</code> reads the catalog's metadata and nothing else. You get back a
          <code>Catalog</code> that knows its columns, types, and partitioning, but holds no rows.</p>
 
@@ -127,7 +127,7 @@ ztf</code></pre>
       </div>
 
 
-      <h3 id="load-columns">pick columns</h3>
+      <h3 id="load-columns">Pick columns</h3>
       <p>Every catalog defines a set of <em>default columns</em>, loaded when you don't ask for
          specific ones. That default exists to stop you accidentally pulling two hundred columns
          across the network. Name what you need and the rest is never read.</p>
@@ -153,9 +153,9 @@ ztf.all_columns</code></pre>
     </section>
 
     <section class="section" id="go-faster">
-      <h2>go faster<a class="anchor" href="#go-faster">#</a></h2>
+      <h2>Go faster<a class="anchor" href="#go-faster">#</a></h2>
 
-      <h3 id="faster-subset">cut it down first</h3>
+      <h3 id="faster-subset">Cut it down first</h3>
       <p>Write your whole workflow against one small region of sky. Check the results look the way
          you expected. Then delete the search and run the same code on the full catalog. This is
          the habit that saves the most time while you are still figuring out what you want, because
@@ -176,12 +176,12 @@ gaia = gaia.cone_search(ra=180.0, dec=10.0, radius_arcsec=3600)
       <p>There are other shapes when a cone doesn't fit: <code>box_search</code>,
          <code>polygon_search</code>, <code>moc_search</code>, and <code>order_search</code>.</p>
 
-      <h3 id="faster-columns">ask for fewer columns</h3>
+      <h3 id="faster-columns">Ask for fewer columns</h3>
       <p>Covered up in <a href="#load-columns">pick columns</a>, but it belongs here too. It is
          the cheapest speed-up to apply &mdash; one keyword argument, no restructuring &mdash; and
          unselected columns are never read at all.</p>
 
-      <h3 id="faster-dask">start a Dask client</h3>
+      <h3 id="faster-dask">Start a Dask client</h3>
       <p>LSDB runs on Dask. Without a client you still get parallelism across your cores; with one
          you get a dashboard showing exactly what is running, how much memory each worker holds,
          and which task is the bottleneck.</p>
@@ -224,7 +224,7 @@ client  # displays a link to the dashboard</code></pre>
            dashboard is mostly orange, you have too many workers, not too few.</p>
       </div>
 
-      <h3 id="faster-region">read the nearest copy</h3>
+      <h3 id="faster-region">Read the nearest copy</h3>
       <p>Catalogs are mirrored across regions and providers. <code>s3://</code> endpoints generally
          outperform <code>https://</code>, and if you are working on a cluster that already holds a
          local copy, use that instead of pulling across the internet at all.</p>
@@ -236,9 +236,9 @@ client  # displays a link to the dashboard</code></pre>
     </section>
 
     <section class="section" id="examine">
-      <h2>examine the catalog<a class="anchor" href="#examine">#</a></h2>
+      <h2>Examine the catalog<a class="anchor" href="#examine">#</a></h2>
 
-      <h3 id="examine-head">look at a few rows</h3>
+      <h3 id="examine-head">Look at a few rows</h3>
       <p><code>head()</code> is the cheap way to see real values: it reads from the first partitions
          that have data rather than computing everything.</p>
 
@@ -260,7 +260,7 @@ gaia.head(20)</code></pre>
            <code>compute()</code> for results you have already cut down.</p>
       </div>
 
-      <h3 id="examine-size">find out how big it is</h3>
+      <h3 id="examine-size">Find out how big it is</h3>
       <p>Before you compute anything, ask what it would cost. <code>estimate_size()</code> prints a
          report based on metadata alone &mdash; no row data is read.</p>
 
@@ -280,7 +280,7 @@ Expect up to 37.2 GiB on DISK.</div>
 
       <p>That is the number worth checking before you reach for <code>compute()</code>.</p>
 
-      <h3 id="examine-stats">check column statistics</h3>
+      <h3 id="examine-stats">Check column statistics</h3>
       <p>HATS stores per-column minimum, maximum, and null counts in the parquet footers, so LSDB
          can report them across the whole catalog without touching a single row of data. This
          returns immediately even on a billion-row catalog.</p>
@@ -301,7 +301,7 @@ gaia.per_partition_statistics()         # the same, broken down by partition</co
         <a href="https://docs.lsdb.io/en/stable/reference/catalog_inspection.html">Inspection reference</a>
       </div>
 
-      <h3 id="examine-partition">use one partition</h3>
+      <h3 id="examine-partition">Use one partition</h3>
       <p>One partition is a normal, laptop-sized dataframe. It is the fastest way to try something
          out on real data before committing to the whole sky.</p>
 
@@ -316,7 +316,7 @@ gaia.get_healpix_pixels()[:3]           # or address a pixel directly
 gaia.get_partition(2, 108).compute()    # order 2, pixel 108</code></pre>
       </div>
 
-      <h3 id="examine-plot">see where the data is</h3>
+      <h3 id="examine-plot">See where the data is</h3>
 
       <div class="snippet" data-setup="gaia-loaded" data-verify="run">
         <div class="snippet__bar">
@@ -332,9 +332,9 @@ gaia.plot_points()      # the objects (cut the catalog down first)</code></pre>
     </section>
 
     <section class="section" id="modify">
-      <h2>modify the catalog<a class="anchor" href="#modify">#</a></h2>
+      <h2>Modify the catalog<a class="anchor" href="#modify">#</a></h2>
 
-      <h3 id="modify-search">select a region of sky</h3>
+      <h3 id="modify-search">Select a region of sky</h3>
       <p>Region searches are how you cut a catalog down spatially. Each runs in two stages: a
          coarse filter that decides which partitions to open at all, then a fine filter on the rows
          inside them. Pass <code>fine=False</code> to keep whole partitions and skip the second
@@ -360,7 +360,7 @@ gaia.polygon_search([(179.0, 9.0), (181.0, 9.0), (181.0, 11.0), (179.0, 11.0)])<
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/pre_executed/custom_search.html">Notebook: custom searches</a>
       </div>
 
-      <h3 id="modify-query">filter rows</h3>
+      <h3 id="modify-query">Filter rows</h3>
       <p><code>query()</code> takes a pandas-style expression string and stays lazy. Column names
          that aren't valid Python identifiers go in backticks; <code>@variable</code> is not
          supported, so interpolate with an f-string instead.</p>
@@ -380,7 +380,7 @@ brighter = gaia.query(f"phot_g_mean_mag &lt; {limit}")</code></pre>
         <a href="https://docs.lsdb.io/en/stable/reference/catalog_filtering.html">Filtering reference</a>
       </div>
 
-      <h3 id="modify-map">apply your own function</h3>
+      <h3 id="modify-map">Apply your own function</h3>
       <p><code>map_partitions</code> hands your function one partition at a time as a pandas
          dataframe, in parallel, across the whole catalog. Dask works out the resulting columns by
          running your function on an empty frame; pass <code>meta</code> explicitly when that
@@ -416,14 +416,14 @@ with_flux = gaia.map_partitions(add_flux)</code></pre>
     </section>
 
     <section class="section" id="nested">
-      <h2>work with nested data<a class="anchor" href="#nested">#</a></h2>
+      <h2>Work with nested data<a class="anchor" href="#nested">#</a></h2>
 
       <p>Light curves, spectra, and detection histories are many measurements per object. A
          <em>nested column</em> holds a whole sub-table inside each row, so one row stays one
          object no matter how many epochs it has. See
          <a href="ask.html#what-is-hats">Ask</a> for what that means for the data model.</p>
 
-      <h3 id="nested-make">nest list columns</h3>
+      <h3 id="nested-make">Nest list columns</h3>
       <p>Plenty of catalogs ship light curves as parallel <em>list</em> columns &mdash; ZTF DR22
          gives you <code>hmjd</code>, <code>mag</code> and <code>magerr</code> as arrays.
          <code>nest_lists</code> folds those into one nested column you can work with as a unit.</p>
@@ -450,7 +450,7 @@ lc.nested_columns          # ['lc']</code></pre>
         <a href="https://nested-pandas.readthedocs.io/en/stable/">nested-pandas documentation</a>
       </div>
 
-      <h3 id="nested-look">look inside one</h3>
+      <h3 id="nested-look">Look inside one</h3>
 
       <div class="snippet" data-setup="lc-nested" data-verify="run">
         <div class="snippet__bar">
@@ -463,7 +463,7 @@ rows["lc"].nest.columns    # ['hmjd', 'mag', 'magerr']
 rows["lc"].nest.to_flat()  # one row per epoch instead of per object</code></pre>
       </div>
 
-      <h3 id="nested-map">get one value per object</h3>
+      <h3 id="nested-map">Get one value per object</h3>
       <p>This is the common shape: reduce each object's light curve to a number, and keep it
          beside the object. <code>map_rows</code> passes each row in, nested column included.</p>
 
@@ -494,9 +494,9 @@ mean_mags = lc.map_rows(
     </section>
 
     <section class="section" id="crossmatch">
-      <h2>crossmatch<a class="anchor" href="#crossmatch">#</a></h2>
+      <h2>Crossmatch<a class="anchor" href="#crossmatch">#</a></h2>
 
-      <h3 id="crossmatch-basic">match two catalogs</h3>
+      <h3 id="crossmatch-basic">Match two catalogs</h3>
       <p>Crossmatching is positional and lazy. LSDB aligns the two catalogs' partitions, then
          matches within each overlapping pair &mdash; so nothing is loaded until you compute.</p>
 
@@ -518,7 +518,7 @@ matched.head()</code></pre>
         <a href="https://docs.lsdb.io/en/stable/reference/api/lsdb.catalog.Catalog.crossmatch.html">crossmatch reference</a>
       </div>
 
-      <h3 id="crossmatch-margins">not get wrong answers</h3>
+      <h3 id="crossmatch-margins">Not get wrong answers</h3>
 
       <div class="callout callout--warn">
         <span class="callout__title">&#9888; Crossmatch without a margin and you get wrong answers, silently</span>
@@ -558,7 +558,7 @@ matched = ztf.crossmatch(
         <a href="https://docs.lsdb.io/en/stable/tutorials/margins.html">Margins, in depth</a>
       </div>
 
-      <h3 id="crossmatch-how">keep unmatched rows</h3>
+      <h3 id="crossmatch-how">Keep unmatched rows</h3>
       <p><code>how="inner"</code> (the default) keeps only objects that matched.
          <code>how="left"</code> keeps every row of the left catalog, filling in nulls where
          nothing matched &mdash; useful when the question is "which of my objects have no
@@ -582,7 +582,7 @@ labelled = ztf.crossmatch(gaia, radius_arcsec=1.0, suffixes=("_ztf", "_gaia"))</
       </div>
 
 
-      <h3 id="crossmatch-custom">use my own algorithm</h3>
+      <h3 id="crossmatch-custom">Use my own algorithm</h3>
       <p>The default is a k-d tree nearest-neighbour match. To match on something other than sky
          position &mdash; colour, proper motion, a probabilistic score &mdash; subclass
          <code>AbstractCrossmatchAlgorithm</code> and hand it over.</p>
@@ -608,9 +608,9 @@ matched = ztf.crossmatch(gaia, algorithm=MyMatch)</code></pre>
     </section>
 
     <section class="section" id="save">
-      <h2>save my results<a class="anchor" href="#save">#</a></h2>
+      <h2>Save my results<a class="anchor" href="#save">#</a></h2>
 
-      <h3 id="save-compute">pull it into pandas</h3>
+      <h3 id="save-compute">Pull it into pandas</h3>
       <p>Once the result is genuinely small, <code>compute()</code> gives you an ordinary
          in-memory dataframe to plot, fit, or hand to another library.</p>
 
@@ -624,7 +624,7 @@ matched = ztf.crossmatch(gaia, algorithm=MyMatch)</code></pre>
 result.to_csv("my_result.csv")</code></pre>
       </div>
 
-      <h3 id="save-write">write a HATS catalog</h3>
+      <h3 id="save-write">Write a HATS catalog</h3>
       <p>When the result is too big for memory, or you want to pick up where you left off
          tomorrow, write it back out as a HATS catalog. It reopens with
          <code>open_catalog</code> like any other, and it is partitioned, so the next workflow
