@@ -147,7 +147,7 @@ result = (
 
       <div class="links">
         <a href="https://docs.lsdb.io/en/stable/tutorials/performance.html">Benchmarks: 1.2B &times; 1.8B rows</a>
-        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/small_scale.html">Notebook: working at small scale</a>
+        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/small_scale.html">Notebook: starting at small scale</a>
       </div>
     </section>
 
@@ -544,6 +544,10 @@ frame.index.name                  # '_healpix_29'</code></pre>
          just never touches your data. On <a href="do.html">Do</a>, any snippet that reads rows is
          tagged <span class="badge badge--hot">&#9889; triggers computation</span>.</p>
 
+      <div class="links">
+        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/lazy_operations.html">Notebook: lazy operations</a>
+      </div>
+
       <h3 id="nothing-kernel">Why did my kernel die?</h3>
       <p>The same reason, from the other side. <code>compute()</code> means "give me all of this,
          in memory, now". If the catalog is a billion rows, that request is not slow, it is
@@ -563,7 +567,6 @@ frame.index.name                  # '_healpix_29'</code></pre>
          partitions are in flight and how much memory each worker is holding.</p>
 
       <div class="links">
-        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/lazy_operations.html">Notebook: lazy operations</a>
         <a href="https://docs.lsdb.io/en/stable/tutorials/dask-messages-guide.html">Decoding alarming Dask messages</a>
       </div>
     </section>
