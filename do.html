@@ -439,7 +439,7 @@ deep_fields = gaia.moc_search(cone_moc)</code></pre>
       </div>
 
       <p>Because the union is a single MOC, LSDB opens only the partitions touching any of the six
-         fields &mdash; one pass, not six. The same shape works for intersections and differences,
+         fields: one pass, not six. The same shape works for intersections and differences,
          and <code>region_to_moc</code> also offers <code>box_to_moc</code>,
          <code>polygon_to_moc</code> and <code>pixel_list_to_moc</code> as starting points.</p>
 
@@ -458,10 +458,6 @@ gaia = lsdb.open_catalog(
     columns=["ra", "dec", "phot_g_mean_mag"],
 )</code></pre>
       </div>
-
-      <p>Two more worth knowing: <code>order_search</code> selects by partition order, and
-         <code>id_search</code> looks up known objects by identifier using an index catalog. You
-         can also write your own search.</p>
 
       <div class="links">
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/region_selection.html">Notebook: region selection</a>
