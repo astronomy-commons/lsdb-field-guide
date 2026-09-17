@@ -3,7 +3,7 @@
 A quick reference for [LSDB](https://github.com/astronomy-commons/lsdb), aimed at people
 meeting it for the first time at a conference hack day.
 
-**Live site:** https://olivialynn.github.io/lsdb-field-guide/
+**Live site:** https://astronomy-commons.github.io/lsdb-field-guide/
 
 ## What this is
 
