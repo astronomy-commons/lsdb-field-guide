@@ -429,7 +429,7 @@ fields = {
 }
 
 cone_mocs = [
-    # A 4 degree cone around each field centre.
+    # A 4 degree cone around each field center.
     region_to_moc.cone_to_moc(ra=ra, dec=dec, radius_arcsec=4 * 3600, max_depth=10)
     for ra, dec in fields.values()
 ]
@@ -453,7 +453,7 @@ deep_fields = gaia.moc_search(cone_moc)</code></pre>
         <pre><code>from lsdb.core.search.region_search import MOCSearch
 
 gaia = lsdb.open_catalog(
-    "https://data.lsdb.io/hats/gaia_dr3/gaia",
+    "https://data.lsdb.io/hats/gaia_dr3",
     search_filter=MOCSearch(cone_moc),
     columns=["ra", "dec", "phot_g_mean_mag"],
 )</code></pre>
