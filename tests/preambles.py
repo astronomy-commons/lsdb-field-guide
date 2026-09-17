@@ -51,17 +51,14 @@ gaia = lsdb.open_catalog(
 ).cone_search({CONE})
 ''',
 
-    "lc-nested": f'''
+    "lc-nested": '''
 import lsdb
 lc = lsdb.open_catalog(
-    "{ZTF_LC}",
-    columns=["objectid", "objra", "objdec", "nepochs", "hmjd", "mag", "magerr"],
-).nest_lists(
-    base_columns=["objectid", "objra", "objdec", "nepochs"],
-    list_columns=["hmjd", "mag", "magerr"],
-    name="lc",
-).cone_search(ra=180.0, dec=10.0, radius_arcsec=300)
+    "https://data.lsdb.io/hats/alerce",
+    columns=["oid", "mean_ra", "mean_dec", "lc"],
+)
 ''',
+
 
     # Builds the union MOC that the second MOC snippet reuses.
     "moc": f'''

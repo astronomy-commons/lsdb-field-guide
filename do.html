@@ -524,21 +524,32 @@ with_flux = gaia.map_partitions(add_flux)</code></pre>
 
       <p>Light curves, spectra, and detection histories are many measurements per object. A
          <em>nested column</em> holds a whole sub-table inside each row, so one row stays one
-         object no matter how many epochs it has. See
-         <a href="ask.html#what-is-nested">Ask</a> for what that means for the data model.</p>
+         object no matter how many epochs it has. Plenty of catalogs ship that way already &mdash;
+         the ALeRCE ZTF object catalog below arrives with its light curves nested, nothing to
+         assemble. See <a href="ask.html#what-is-nested">Ask</a> for what that means for the data
+         model, and for the catalogs that hand you bare list columns instead.</p>
 
       <h3 id="nested-look">Look inside a nested frame</h3>
 
-      <div class="snippet" data-setup="lc-nested" data-verify="run">
+      <div class="snippet" data-setup="none" data-verify="run">
         <div class="snippet__bar">
           <span class="badge badge--hot">&#9889; triggers computation</span>
           <span class="snippet__label">python</span>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/pre_executed/nestedframe.html">used in nestedframe.ipynb</a>
         </div>
-        <pre><code>rows = lc.head(2)
-rows["lc"].nest.columns    # ['hmjd', 'mag', 'magerr']
-rows["lc"].nest.to_flat()  # one row per epoch instead of per object</code></pre>
+        <pre><code>lc = lsdb.open_catalog(
+    "https://data.lsdb.io/hats/alerce",
+    columns=["oid", "mean_ra", "mean_dec", "lc"],
+)
+lc.nested_columns          # ['lc']
+
+rows = lc.head(2)
+rows["lc"].nest.columns    # lc_mjd, lc_magpsf, lc_fid, ...
+rows["lc"].nest.to_flat()  # one row per detection instead of per object</code></pre>
       </div>
+
+      <p>Two objects unpack to dozens of detections. Flattening is there when you want it, but the
+         nested form is what keeps a million objects a million rows.</p>
 
       <h3 id="nested-map">Get one value per object</h3>
       <p>This is the common shape: reduce each object's light curve to a number, and keep it
@@ -552,8 +563,8 @@ rows["lc"].nest.to_flat()  # one row per epoch instead of per object</code></pre
         <pre><code>import numpy as np
 
 mean_mags = lc.map_rows(
-    lambda row: float(np.nanmean(row["lc.mag"])),
-    columns=["lc.mag"],
+    lambda row: float(np.nanmean(row["lc.lc_magpsf"])),
+    columns=["lc.lc_magpsf"],
     meta={"mean_mag": "float64"},
     output_names="mean_mag",
     append_columns=True,      # keep the original columns alongside the result
