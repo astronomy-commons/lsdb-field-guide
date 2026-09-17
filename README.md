@@ -36,6 +36,17 @@ python -m http.server 8000
 
 Edit the HTML directly and reload. That's the whole workflow.
 
+Two checks, neither of which needs a build:
+
+```bash
+python3 tests/check_markup.py    # anchors, assets, compute badges — instant
+python3 tests/run_snippets.py    # actually executes every snippet — minutes, hits the network
+```
+
+`check_markup.py` is the one to run constantly. `run_snippets.py` executes each
+snippet against live `data.lsdb.io` catalogs, so it runs weekly in CI rather than on
+every push — a flaky catalog read shouldn't block a CSS change.
+
 ### Conventions worth keeping
 
 - **The sidebar is generated, not hand-written.** After adding or renaming a section,
