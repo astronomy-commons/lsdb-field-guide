@@ -407,13 +407,61 @@ gaia.box_search(ra=(179.0, 181.0), dec=(9.0, 11.0))
 gaia.polygon_search([(179.0, 9.0), (181.0, 9.0), (181.0, 11.0), (179.0, 11.0)])</code></pre>
       </div>
 
-        - TODO: add snippet specifically for MOC search (talk to Sandro for this).  
-        
-        - TODO: add snippet to do a union of regions  
-      
-      <p>There are more: <code>moc_search</code> for an arbitrary sky region as a MOC,
-         <code>order_search</code> to select by partition order, and <code>id_search</code> to look
-         up known objects by identifier using an index catalog. You can also write your own.</p>
+      <p>For anything that isn't one simple shape, build a <strong>MOC</strong> &mdash; a
+         multi-order coverage map &mdash; and search on that. MOCs support set operations, so
+         several regions become one filter. Here are the Rubin DP1 deep fields as a single
+         selection:</p>
+
+      <div class="snippet" data-setup="none" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code>from functools import reduce
+from hats.pixel_math import region_to_moc
+
+fields = {
+    "ELAISS1": (9.45, -44.02),   # ELAIS-S1
+    "XMM_LSS": (35.57, -4.82),   # XMM Large Scale Structure
+    "ECDFS": (52.98, -28.12),    # Extended Chandra Deep Field South
+    "COSMOS": (150.11, 2.23),    # COSMOS
+    "EDFS_a": (58.9, -49.32),    # Euclid Deep Field South a
+    "EDFS_b": (63.6, -47.60),    # Euclid Deep Field South b
+}
+
+cone_mocs = [
+    # A 4 degree cone around each field centre.
+    region_to_moc.cone_to_moc(ra=ra, dec=dec, radius_arcsec=4 * 3600, max_depth=10)
+    for ra, dec in fields.values()
+]
+cone_moc = reduce(lambda a, b: a.union(b), cone_mocs)
+
+deep_fields = gaia.moc_search(cone_moc)</code></pre>
+      </div>
+
+      <p>Because the union is a single MOC, LSDB opens only the partitions touching any of the six
+         fields &mdash; one pass, not six. The same shape works for intersections and differences,
+         and <code>region_to_moc</code> also offers <code>box_to_moc</code>,
+         <code>polygon_to_moc</code> and <code>pixel_list_to_moc</code> as starting points.</p>
+
+      <p>A MOC can also be applied when the catalog is opened, so the partitions outside it are
+         never considered at all:</p>
+
+      <div class="snippet" data-setup="none" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code>from lsdb.core.search.region_search import MOCSearch
+
+gaia = lsdb.open_catalog(
+    "https://data.lsdb.io/hats/gaia_dr3/gaia",
+    search_filter=MOCSearch(cone_moc),
+    columns=["ra", "dec", "phot_g_mean_mag"],
+)</code></pre>
+      </div>
+
+      <p>Two more worth knowing: <code>order_search</code> selects by partition order, and
+         <code>id_search</code> looks up known objects by identifier using an index catalog. You
+         can also write your own search.</p>
 
       <div class="links">
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/region_selection.html">Notebook: region selection</a>
@@ -552,10 +600,11 @@ matched.head()</code></pre>
       </div>
 
       <h3 id="crossmatch-nested">Keep all the matches</h3>
-      <p>A plain crossmatch gives one row per matched pair, so an object with five neighbours
-         becomes five rows. <code>crossmatch_nested</code> puts the matched rows into a nested
-         column instead, and the object stays one row &mdash; distances and any other extra
-         columns ride along inside.</p>
+      <p>A crossmatch keeps the single closest neighbour by default, so you get one row per
+         matched object. Ask for several with <code>n_neighbors</code> and you get a row per
+         <em>pair</em> instead &mdash; five neighbours, five rows for that object.
+         <code>crossmatch_nested</code> puts those matches in a nested column instead, so the
+         object stays one row, with the distances and any other extra columns inside it.</p>
 
       <div class="snippet" data-setup="ztf-and-gaia" data-verify="run">
         <div class="snippet__bar">
@@ -684,8 +733,7 @@ matched = ztf.crossmatch(
         <span class="callout__title">Cite the algorithm you used</span>
         <p>These are other people's algorithms &mdash; NWAY is Salvato et al. 2018. The package
            tracks which ones a run touched via CitationCompass, so
-           <code>get_used_citations()</code> will tell you what to cite. Worth doing before the
-           paper, not after.</p>
+           <code>get_used_citations()</code> will tell you what to cite.</p>
       </div>
 
       <div class="links">
@@ -715,7 +763,7 @@ result.to_parquet("my_result.parquet")</code></pre>
 
       <div class="callout">
         <span class="callout__title">Read it back with nested-pandas</span>
-        <p>Use <code>nested_pandas.read_parquet</code>, not <code>pandas.read_parquet</code>. For a
+        <p>When re-opening, use <code>nested_pandas.read_parquet</code>, not <code>pandas.read_parquet</code>. For a
            result with nested columns it is required: plain pandas hands the column back as
            <code>object</code> and the <code>.nest</code> accessor is gone. Even without nested
            columns it is the better default, because it preserves the Arrow-backed types rather
