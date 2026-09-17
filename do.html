@@ -42,6 +42,7 @@
       <li class="is-sub"><a href="#load-finding">Find catalogs</a></li>
       <li class="is-sub"><a href="#load-basic">Open a catalog</a></li>
       <li class="is-sub"><a href="#load-columns">Pick columns</a></li>
+      <li class="is-sub"><a href="#load-from-dataframe">Make one from a dataframe</a></li>
       <li><a href="#go-faster">Go faster</a></li>
       <li class="is-sub"><a href="#faster-subset">Cut it down first</a></li>
       <li class="is-sub"><a href="#faster-columns">Ask for fewer columns</a></li>
@@ -50,22 +51,21 @@
       <li><a href="#examine">Examine the catalog</a></li>
       <li class="is-sub"><a href="#examine-head">Look at a few rows</a></li>
       <li class="is-sub"><a href="#examine-size">Find out how big it is</a></li>
-      <li class="is-sub"><a href="#examine-stats">Check column statistics</a></li>
+      <li class="is-sub"><a href="#examine-stats">Check range of values in a column</a></li>
       <li class="is-sub"><a href="#examine-partition">Use one partition</a></li>
       <li class="is-sub"><a href="#examine-plot">See where the data is</a></li>
       <li><a href="#modify">Modify the catalog</a></li>
       <li class="is-sub"><a href="#modify-search">Select a region of sky</a></li>
       <li class="is-sub"><a href="#modify-query">Filter rows</a></li>
-      <li class="is-sub"><a href="#modify-map">Apply your own function</a></li>
+      <li class="is-sub"><a href="#modify-map">Apply my own function</a></li>
       <li><a href="#nested">Work with nested data</a></li>
-      <li class="is-sub"><a href="#nested-make">Nest list columns</a></li>
-      <li class="is-sub"><a href="#nested-look">Look inside one</a></li>
+      <li class="is-sub"><a href="#nested-look">Look inside a nested frame</a></li>
       <li class="is-sub"><a href="#nested-map">Get one value per object</a></li>
       <li><a href="#crossmatch">Crossmatch</a></li>
       <li class="is-sub"><a href="#crossmatch-basic">Match two catalogs</a></li>
       <li class="is-sub"><a href="#crossmatch-margins">Not get wrong answers</a></li>
       <li class="is-sub"><a href="#crossmatch-how">Keep unmatched rows</a></li>
-      <li class="is-sub"><a href="#crossmatch-custom">Use my own algorithm</a></li>
+      <li class="is-sub"><a href="#crossmatch-custom">Use other xmatch algorithms</a></li>
       <li><a href="#save">Save my results</a></li>
       <li class="is-sub"><a href="#save-compute">Pull it into pandas</a></li>
       <li class="is-sub"><a href="#save-write">Write a HATS catalog</a></li>
@@ -140,6 +140,7 @@ ztf</code></pre>
         <pre><code># What am I getting by default, and what else is there?
 ztf.columns
 ztf.all_columns</code></pre>
+# TODO: show how to use this tho (like, show load catalog with columns="...")
       </div>
 
       <div class="callout">
@@ -151,6 +152,55 @@ ztf.all_columns</code></pre>
 
 
     </section>
+
+      <h3 id="load-from-dataframe">Make one from a dataframe</h3>
+      <p>Data of your own becomes a catalog with <code>from_dataframe</code>. LSDB picks up the
+         coordinate columns by name &mdash; case-insensitive <code>ra</code> and <code>dec</code>
+         &mdash; works out a partitioning, and builds a margin while it is there, so a catalog you
+         made is safe to <a href="#crossmatch">crossmatch</a> immediately.</p>
+
+      <div class="snippet" data-setup="none" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code>import lsdb
+import pandas as pd
+
+df = pd.DataFrame({
+    "ra": [180.01, 180.42, 179.87],
+    "dec": [9.94, 10.21, 10.55],
+    "source_id": [1, 2, 3],
+})
+
+catalog = lsdb.from_dataframe(df)
+catalog.margin          # built for you, no extra argument</code></pre>
+      </div>
+
+      <p>An astropy <code>Table</code> goes in exactly the same way, which is usually the shortest
+         route from a FITS catalog sitting on your disk:</p>
+
+      <div class="snippet" data-setup="none" data-verify="skip" data-skip-reason="reads a local FITS file">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code>from astropy.table import Table
+
+catalog = lsdb.from_astropy(Table.read("my_targets.fits"))</code></pre>
+      </div>
+
+      <div class="callout">
+        <span class="callout__title">Both are for small inputs</span>
+        <p>Roughly under a million rows, or a gigabyte in memory &mdash; they build the whole thing
+           in memory before handing it back. Above that the conversion belongs in
+           <strong>hats-import</strong>, which does the same job out of core and writes a HATS
+           catalog you can open like any other.</p>
+      </div>
+
+      <div class="links">
+        <a href="https://docs.lsdb.io/en/stable/reference/api/lsdb.from_dataframe.html">from_dataframe reference</a>
+        <a href="https://docs.lsdb.io/en/stable/reference/api/lsdb.from_astropy.html">from_astropy reference</a>
+        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/import_catalogs.html">Notebook: importing your own catalog</a>
+      </div>
 
     <section class="section" id="go-faster">
       <h2>Go faster<a class="anchor" href="#go-faster">#</a></h2>
@@ -207,7 +257,7 @@ client  # displays a link to the dashboard</code></pre>
           <span class="snippet__label">python</span>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/dask_client.html">used in dask_client.ipynb</a>
         </div>
-        <pre><code>with Client(n_workers=4, threads_per_worker=1) as client:
+        <pre><code>with Client(n_workers=4, threads_per_worker=1, memory_limit="auto") as client:
     result = matched.compute()</code></pre>
       </div>
 
@@ -230,7 +280,6 @@ client  # displays a link to the dashboard</code></pre>
          local copy, use that instead of pulling across the internet at all.</p>
 
       <div class="links">
-        <a href="https://docs.lsdb.io/en/stable/tutorials/performance.html">Benchmarks: 1.2B &times; 1.8B rows</a>
         <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/pre_executed/scaling_workflows.html">Notebook: scaling workflows</a>
       </div>
     </section>
@@ -280,7 +329,7 @@ Expect up to 37.2 GiB on DISK.</div>
 
       <p>That is the number worth checking before you reach for <code>compute()</code>.</p>
 
-      <h3 id="examine-stats">Check column statistics</h3>
+      <h3 id="examine-stats">Check range of values in a column</h3>
       <p>HATS stores per-column minimum, maximum, and null counts in the parquet footers, so LSDB
          can report them across the whole catalog without touching a single row of data. This
          returns immediately even on a billion-row catalog.</p>
@@ -302,7 +351,7 @@ gaia.per_partition_statistics()         # the same, broken down by partition</co
       </div>
 
       <h3 id="examine-partition">Use one partition</h3>
-      <p>One partition is a normal, laptop-sized dataframe. It is the fastest way to try something
+      <p>One partition is a normal, laptop-sized dataframe. It is equivalent to a single Healpix pixel. It is the fastest way to try something
          out on real data before committing to the whole sky.</p>
 
       <div class="snippet" data-setup="gaia-loaded" data-verify="run">
@@ -313,7 +362,7 @@ gaia.per_partition_statistics()         # the same, broken down by partition</co
         <pre><code>one = gaia.partitions[0].compute()      # by position
 
 gaia.get_healpix_pixels()[:3]           # or address a pixel directly
-gaia.get_partition(2, 108).compute()    # order 2, pixel 108</code></pre>
+gaia.get_partition(2, 108).compute()    # healpix order 2, pixel 108</code></pre>
       </div>
 
       <h3 id="examine-plot">See where the data is</h3>
@@ -350,6 +399,10 @@ gaia.box_search(ra=(179.0, 181.0), dec=(9.0, 11.0))
 gaia.polygon_search([(179.0, 9.0), (181.0, 9.0), (181.0, 11.0), (179.0, 11.0)])</code></pre>
       </div>
 
+        - TODO: add snippet specifically for MOC search (talk to Sandro for this).  
+        
+        - TODO: add snippet to do a union of regions  
+      
       <p>There are more: <code>moc_search</code> for an arbitrary sky region as a MOC,
          <code>order_search</code> to select by partition order, and <code>id_search</code> to look
          up known objects by identifier using an index catalog. You can also write your own.</p>
@@ -362,8 +415,7 @@ gaia.polygon_search([(179.0, 9.0), (181.0, 9.0), (181.0, 11.0), (179.0, 11.0)])<
 
       <h3 id="modify-query">Filter rows</h3>
       <p><code>query()</code> takes a pandas-style expression string and stays lazy. Column names
-         that aren't valid Python identifiers go in backticks; <code>@variable</code> is not
-         supported, so interpolate with an f-string instead.</p>
+         that aren't valid Python identifiers go in backticks.</p>
 
       <div class="snippet" data-setup="gaia-loaded" data-verify="run">
         <div class="snippet__bar">
@@ -380,7 +432,7 @@ brighter = gaia.query(f"phot_g_mean_mag &lt; {limit}")</code></pre>
         <a href="https://docs.lsdb.io/en/stable/reference/catalog_filtering.html">Filtering reference</a>
       </div>
 
-      <h3 id="modify-map">Apply your own function</h3>
+      <h3 id="modify-map">Apply my own function</h3>
       <p><code>map_partitions</code> hands your function one partition at a time as a pandas
          dataframe, in parallel, across the whole catalog. Dask works out the resulting columns by
          running your function on an empty frame; pass <code>meta</code> explicitly when that
@@ -421,36 +473,9 @@ with_flux = gaia.map_partitions(add_flux)</code></pre>
       <p>Light curves, spectra, and detection histories are many measurements per object. A
          <em>nested column</em> holds a whole sub-table inside each row, so one row stays one
          object no matter how many epochs it has. See
-         <a href="ask.html#what-is-hats">Ask</a> for what that means for the data model.</p>
+         <a href="ask.html#what-is-nested">Ask</a> for what that means for the data model.</p>
 
-      <h3 id="nested-make">Nest list columns</h3>
-      <p>Plenty of catalogs ship light curves as parallel <em>list</em> columns &mdash; ZTF DR22
-         gives you <code>hmjd</code>, <code>mag</code> and <code>magerr</code> as arrays.
-         <code>nest_lists</code> folds those into one nested column you can work with as a unit.</p>
-
-      <div class="snippet" data-setup="none" data-verify="run">
-        <div class="snippet__bar">
-          <span class="snippet__label">python</span>
-          <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/pre_executed/nestedframe.html">used in nestedframe.ipynb</a>
-        </div>
-        <pre><code>lc = lsdb.open_catalog(
-    "https://data.lsdb.io/hats/ztf_dr22/ztf_lc",
-    columns=["objectid", "objra", "objdec", "nepochs", "hmjd", "mag", "magerr"],
-)
-
-lc = lc.nest_lists(
-    base_columns=["objectid", "objra", "objdec", "nepochs"],
-    list_columns=["hmjd", "mag", "magerr"],
-    name="lc",
-)
-lc.nested_columns          # ['lc']</code></pre>
-      </div>
-
-      <div class="links">
-        <a href="https://nested-pandas.readthedocs.io/en/stable/">nested-pandas documentation</a>
-      </div>
-
-      <h3 id="nested-look">Look inside one</h3>
+      <h3 id="nested-look">Look inside a nested frame</h3>
 
       <div class="snippet" data-setup="lc-nested" data-verify="run">
         <div class="snippet__bar">
@@ -475,8 +500,8 @@ rows["lc"].nest.to_flat()  # one row per epoch instead of per object</code></pre
         <pre><code>import numpy as np
 
 mean_mags = lc.map_rows(
-    lambda row: float(np.nanmean(row["lc"]["mag"])),
-    columns=["lc"],
+    lambda row: float(np.nanmean(row["lc.mag"])),
+    columns=["lc.mag"],
     meta={"mean_mag": "float64"},
     output_names="mean_mag",
     append_columns=True,      # keep the original columns alongside the result
@@ -517,6 +542,8 @@ matched.head()</code></pre>
       <div class="links">
         <a href="https://docs.lsdb.io/en/stable/reference/api/lsdb.catalog.Catalog.crossmatch.html">crossmatch reference</a>
       </div>
+
+      TODO: add a crossmatch nested section!!
 
       <h3 id="crossmatch-margins">Not get wrong answers</h3>
 
@@ -581,29 +608,9 @@ labelled = ztf.crossmatch(gaia, radius_arcsec=1.0, suffixes=("_ztf", "_gaia"))</
            mirror of a left join, swap which catalog you call <code>.crossmatch()</code> on.</p>
       </div>
 
+      <h3 id="crossmatch-custom">Use other xmatch algorithms</h3>
+TODO fill out (lsdb_crossmatch)
 
-      <h3 id="crossmatch-custom">Use my own algorithm</h3>
-      <p>The default is a k-d tree nearest-neighbour match. To match on something other than sky
-         position &mdash; colour, proper motion, a probabilistic score &mdash; subclass
-         <code>AbstractCrossmatchAlgorithm</code> and hand it over.</p>
-
-      <div class="snippet" data-setup="ztf-and-gaia" data-verify="skip" data-skip-reason="illustrative subclass, not a runnable algorithm">
-        <div class="snippet__bar">
-          <span class="snippet__label">python</span>
-        </div>
-        <pre><code>from lsdb import AbstractCrossmatchAlgorithm
-
-class MyMatch(AbstractCrossmatchAlgorithm):
-    def perform_crossmatch(self):
-        ...  # return matched indices and any extra columns
-
-matched = ztf.crossmatch(gaia, algorithm=MyMatch)</code></pre>
-      </div>
-
-      <div class="links">
-        <a href="https://docs.lsdb.io/en/stable/reference/crossmatch.html">Crossmatch algorithms reference</a>
-        <a class="link--nb" href="https://docs.lsdb.io/en/stable/tutorials/pre_executed/des-gaia.html">Notebook: DES &times; Gaia, end to end</a>
-      </div>
 
     </section>
 
@@ -621,8 +628,10 @@ matched = ztf.crossmatch(gaia, algorithm=MyMatch)</code></pre>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/exporting_results.html">used in exporting_results.ipynb</a>
         </div>
         <pre><code>result = bright.cone_search(ra=180.0, dec=10.0, radius_arcsec=600).compute()
-result.to_csv("my_result.csv")</code></pre>
+result.to_parquet("my_result.parquet")</code></pre>
       </div>
+
+      TODO: add admonition - it's best to read such files back with nested pandas. this is necessary for data with nested columns, but in general will give speed ups by using arrow colum types.
 
       <h3 id="save-write">Write a HATS catalog</h3>
       <p>When the result is too big for memory, or you want to pick up where you left off
