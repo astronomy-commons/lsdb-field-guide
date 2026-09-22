@@ -48,6 +48,7 @@
       <li><a href="#what-is-nested">What is a nested column?</a></li>
       <li><a href="#download">Do I need to download the data?</a></li>
       <li><a href="#pandas">How does this relate to Pandas?</a></li>
+      <li><a href="#astropy">How to migrate from astropy</a></li>
       <li><a href="#ecosystem">Which package do I need?</a></li>
       <li><a href="#what-went-wrong">What went wrong?</a></li>
       <li class="is-sub"><a href="#nothing-happening">Why is nothing happening?</a></li>
@@ -461,6 +462,80 @@ frame.index.name                  # '_healpix_29'</code></pre>
       <div class="links">
         <a href="do.html#save-compute">Pulling results into pandas</a>
         <a href="https://nested-pandas.readthedocs.io/en/stable/">nested-pandas documentation</a>
+      </div>
+    </section>
+
+    <section class="section" id="astropy">
+      <h2>How to migrate from astropy<a class="anchor" href="#astropy">#</a></h2>
+
+      <p><code>from_astropy</code> takes the <code>Table</code> you already have and hands back a catalog.</p>
+
+      <div class="snippet" data-setup="none" data-verify="run">
+        <div class="snippet__bar">
+          <span class="badge badge--hot">&#9889; triggers computation</span>
+          <span class="snippet__label">python</span>
+          <a class="snippet__src" href="https://docs.lsdb.io/en/stable/reference/api/lsdb.from_astropy.html">from the from_astropy docstring</a>
+        </div>
+        <pre><code>from astropy.table import Table
+import lsdb
+
+data = {
+    "ra": [10.0, 20.0, 30.0],
+    "dec": [-10.0, -20.0, -30.0],
+    "magnitude": [15.0, 16.5, 14.2],
+}
+table = Table(data)
+catalog = lsdb.from_astropy(table, ra_column="ra", dec_column="dec")
+catalog.head()
+
+# From here it is an ordinary LSDB catalog: crossmatch it against a survey,
+# filter it, or write it out. See Do for the recipes.</code></pre>
+      </div>
+
+      <p>Coordinate columns are detected by name when you leave <code>ra_column</code> and
+         <code>dec_column</code> out, and a margin is built for you, so the result is safe to
+         crossmatch straight away.</p>
+
+      <p>Narrowing an astropy table to a region runs centre-first: build a <code>SkyCoord</code>
+         for the position, build another for every row of the table, then keep the rows whose
+         separation is small enough. In LSDB, you start from the catalog, then hand the region in
+         as an argument.</p>
+
+      <div class="snippet" data-setup="astropy-table" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code>from astropy import units as u
+from astropy.coordinates import SkyCoord
+
+ra, dec = 10.0, -10.0
+
+# pure astropy
+coord_single = SkyCoord(ra, dec, unit="deg")
+coord_table = SkyCoord.guess_from_table(table, unit="deg")
+matches = table[coord_single.separation(coord_table) &lt; 1 * u.arcsec]
+
+# astropy + lsdb
+matches = lsdb.from_astropy(table).cone_search(ra=ra, dec=dec, radius_arcsec=1)</code></pre>
+      </div>
+
+      <p>This lets us avoid excessive computation: astropy computes a separation for every row
+         because the table is just numbers until you wrap it. A HATS catalog already knows where in
+         the sky each of its rows are, so a cone search discards entire files before computing any
+         distance at all.</p>
+
+      <div class="callout">
+        <span class="callout__title">Stay in astropy for the astronomy</span>
+        <p>Units and frames, time systems, WCS, FITS I/O, fitting &mdash; LSDB has no opinion about
+           any of it, and no intention of acquiring one. Cut the catalog down to something that
+           fits in memory, <code>compute()</code>, and hand the result back to astropy. That is the
+           shape this is meant to have.</p>
+      </div>
+
+      <div class="links">
+        <a href="https://docs.lsdb.io/en/stable/reference/api/lsdb.from_astropy.html">from_astropy reference</a>
+        <a href="do.html#load-from-dataframe">Making a catalog from a table</a>
+        <a href="do.html#crossmatch">Crossmatch recipes</a>
       </div>
     </section>
 

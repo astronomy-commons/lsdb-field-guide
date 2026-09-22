@@ -33,6 +33,17 @@ import lsdb
 gaia = lsdb.open_catalog("{GAIA}", columns=["ra", "dec", "phot_g_mean_mag"])
 ''',
 
+    # The table the astropy section builds in the snippet above.
+    "astropy-table": '''
+import lsdb
+from astropy.table import Table
+table = Table({
+    "ra": [10.0, 20.0, 30.0],
+    "dec": [-10.0, -20.0, -30.0],
+    "magnitude": [15.0, 16.5, 14.2],
+})
+''',
+
     "ztf-loaded": f'''
 import lsdb
 ztf = lsdb.open_catalog(
