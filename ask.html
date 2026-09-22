@@ -511,9 +511,7 @@ catalog.head()
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-ra, dec = 10.0, -10.0
-
-coord_single = SkyCoord(ra, dec, unit="deg")
+coord_single = SkyCoord(10.0, -10.0, unit="deg")
 coord_table = SkyCoord.guess_from_table(table, unit="deg")
 matches = table[coord_single.separation(coord_table) &lt; 1 * u.arcsec]</code></pre>
       </div>
@@ -525,7 +523,9 @@ matches = table[coord_single.separation(coord_table) &lt; 1 * u.arcsec]</code></
         <div class="snippet__bar">
           <span class="snippet__label">python</span>
         </div>
-        <pre><code># Astropy plus lsdb
+        <pre><code># Astropy table in lsdb
+
+import lsdb
 
 matches = lsdb.from_astropy(table).cone_search(ra=10.0, dec=-10.0, radius_arcsec=1)</code></pre>
       </div>
