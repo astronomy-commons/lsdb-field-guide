@@ -49,6 +49,7 @@
       <li><a href="#download">Do I need to download the data?</a></li>
       <li><a href="#pandas">How does this relate to Pandas?</a></li>
       <li><a href="#astropy">How to migrate from astropy</a></li>
+      <li class="is-sub"><a href="#astropy-region">The same selection, both ways</a></li>
       <li><a href="#ecosystem">Which package do I need?</a></li>
       <li><a href="#what-went-wrong">What went wrong?</a></li>
       <li class="is-sub"><a href="#nothing-happening">Why is nothing happening?</a></li>
@@ -496,6 +497,7 @@ catalog.head()
          <code>dec_column</code> out, and a margin is built for you, so the result is safe to
          crossmatch straight away.</p>
 
+      <h3 id="astropy-region">The same selection, both ways</h3>
       <p>Narrowing an astropy table to a region runs centre-first: build a <code>SkyCoord</code>
          for the position, build another for every row of the table, then keep the rows whose
          separation is small enough. In LSDB, you start from the catalog, then hand the region in
@@ -505,18 +507,26 @@ catalog.head()
         <div class="snippet__bar">
           <span class="snippet__label">python</span>
         </div>
-        <pre><code>from astropy import units as u
+        <pre><code># pure astropy
+from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 ra, dec = 10.0, -10.0
 
-# pure astropy
 coord_single = SkyCoord(ra, dec, unit="deg")
 coord_table = SkyCoord.guess_from_table(table, unit="deg")
-matches = table[coord_single.separation(coord_table) &lt; 1 * u.arcsec]
+matches = table[coord_single.separation(coord_table) &lt; 1 * u.arcsec]</code></pre>
+      </div>
 
-# astropy + lsdb
-matches = lsdb.from_astropy(table).cone_search(ra=ra, dec=dec, radius_arcsec=1)</code></pre>
+      <p>None of that scaffolding is needed on the LSDB side. There is no intermediate coordinate
+         object to build, because the catalog already carries its positions:</p>
+
+      <div class="snippet" data-setup="astropy-table" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code># astropy + lsdb
+matches = lsdb.from_astropy(table).cone_search(ra=10.0, dec=-10.0, radius_arcsec=1)</code></pre>
       </div>
 
       <p>This lets us avoid excessive computation: astropy computes a separation for every row
