@@ -69,6 +69,28 @@ def check() -> list[str]:
             if badged and not executes:
                 problems.append(f"{name}: snippet ({label}) is badged but nothing executes")
 
+            # Hot-line marks must agree with the badge too. A .hot line has to be
+            # a line that actually computes, and it only earns its keep when some
+            # line in the snippet is cool -- when every line computes, the badge
+            # has already said it and marking them all is noise.
+            code_lines = [ln for ln in body.split("\n") if ln.strip()]
+            hot_lines = [ln for ln in code_lines if 'class="hot"' in ln]
+            all_compute = bool(code_lines) and all(
+                any(call in ln for call in COMPUTES) for ln in code_lines
+            )
+            if hot_lines and not badged:
+                problems.append(f"{name}: snippet ({label}) marks a hot line but carries no badge")
+            for ln in hot_lines:
+                # The opening line of a multi-line marked call is the one that computes.
+                if not any(call in ln for call in COMPUTES):
+                    problems.append(
+                        f"{name}: snippet ({label}) marks a line that does not compute"
+                    )
+            if badged and not hot_lines and not all_compute:
+                problems.append(
+                    f"{name}: snippet ({label}) computes on some lines but marks none"
+                )
+
     # The sidebar must list every heading, in order, with the heading's own words.
     for name in sync(write=False):
         problems.append(f"{name}: sidebar is out of sync — run python3 tools/sync_sidebar.py")

@@ -281,7 +281,7 @@ client  # displays a link to the dashboard</code></pre>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/dask_client.html">used in dask_client.ipynb</a>
         </div>
         <pre><code>with Client(n_workers=4, threads_per_worker=1, memory_limit="auto") as client:
-    result = matched.compute()</code></pre>
+<span class="hot">    result = matched.compute()</span></code></pre>
       </div>
 
       <div class="links">
@@ -382,10 +382,10 @@ gaia.per_partition_statistics()         # the same, broken down by partition</co
           <span class="badge badge--hot">&#9889; triggers computation</span>
           <span class="snippet__label">python</span>
         </div>
-        <pre><code>one = gaia.partitions[0].compute()      # by position
+        <pre><code><span class="hot">one = gaia.partitions[0].compute()      # by position</span>
 
 gaia.get_healpix_pixels()[:3]           # or address a pixel directly
-gaia.get_partition(2, 108).compute()    # healpix order 2, pixel 108</code></pre>
+<span class="hot">gaia.get_partition(2, 108).compute()    # healpix order 2, pixel 108</span></code></pre>
       </div>
 
       <h3 id="examine-plot">See where the data is</h3>
@@ -558,7 +558,7 @@ with_flux = gaia.map_partitions(add_flux)</code></pre>
 )
 lc.nested_columns          # ['lc']
 
-rows = lc.head(2)
+<span class="hot">rows = lc.head(2)</span>
 rows["lc"].nest.columns    # lc_mjd, lc_magpsf, lc_fid, ...
 rows["lc"].nest.to_flat()  # one row per detection instead of per object</code></pre>
       </div>
@@ -614,7 +614,7 @@ mean_mags = lc.map_rows(
     radius_arcsec=1.0,
     n_neighbors=1,
 )
-matched.head()</code></pre>
+<span class="hot">matched.head()</span></code></pre>
       </div>
 
       <div class="links">
@@ -779,7 +779,7 @@ matched = ztf.crossmatch(
           <span class="snippet__label">python</span>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/exporting_results.html">used in exporting_results.ipynb</a>
         </div>
-        <pre><code>result = bright.cone_search(ra=180.0, dec=10.0, radius_arcsec=600).compute()
+        <pre><code><span class="hot">result = bright.cone_search(ra=180.0, dec=10.0, radius_arcsec=600).compute()</span>
 result.to_parquet("my_result.parquet")</code></pre>
       </div>
 
@@ -804,11 +804,11 @@ result.to_parquet("my_result.parquet")</code></pre>
           <span class="snippet__label">python</span>
           <a class="snippet__src" href="https://docs.lsdb.io/en/stable/tutorials/exporting_results.html">used in exporting_results.ipynb</a>
         </div>
-        <pre><code>bright.write_catalog(
+        <pre><code><span class="hot">bright.write_catalog(
     "./my_catalogs/bright_gaia",
     catalog_name="bright_gaia",
     overwrite=True,
-)
+)</span>
 
 again = lsdb.open_catalog("./my_catalogs/bright_gaia")</code></pre>
       </div>

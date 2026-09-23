@@ -233,6 +233,31 @@ body {
 .snippet pre { margin: 0; padding: 0.9rem 1rem; overflow-x: auto; background: var(--code-bg); }
 .snippet code { font: 0.86rem/1.65 var(--mono); color: var(--code-text); }
 
+/* Marks the line inside a snippet that actually costs something. The badge in the
+   bar says a snippet computes; this says where. Used only when some lines in the
+   snippet are cool -- if everything computes, the badge already told the whole
+   story and tinting every line just looks like a rendering fault.
+   The bolt is a pseudo-element, so it never lands in the clipboard or the a11y
+   tree, and it declares .badge's font outright: inside <code> it would otherwise
+   inherit --mono and resolve a different glyph than the badge it echoes. */
+.snippet pre code { display: block; width: max-content; min-width: 100%; }
+
+.snippet .hot {
+  display: block; position: relative;
+  margin-inline: -1rem;
+  padding-left: calc(1rem - 2px); padding-right: 2.4rem;
+  border-left: 2px solid var(--hot-tx);
+  background: var(--hot-bg);
+}
+.snippet .hot::after {
+  content: "\26A1";
+  position: absolute; top: 0.1rem; right: 0.5rem;
+  background: var(--surface); color: var(--hot-tx);
+  border-radius: 100px; padding: 0.1rem 0.4rem;
+  font-family: var(--sans); font-size: 0.72rem; font-weight: 550;
+  line-height: 1.5; letter-spacing: 0.01em;
+}
+
 .copy {
   border: 1px solid var(--border); background: var(--surface);
   color: var(--muted); border-radius: 5px; padding: 0.2rem 0.55rem;

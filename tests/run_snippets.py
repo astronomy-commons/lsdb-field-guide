@@ -20,6 +20,9 @@ from preambles import PREAMBLES  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SNIPPET = re.compile(r'<div class="snippet"([^>]*)>(.*?)</pre>', re.S)
+# Hot-line markup lives inside <pre><code>; strip tags before running the code.
+# Tags first, then unescape -- a literal "<" in a snippet is stored as &lt;.
+TAG = re.compile(r"<[^>]+>")
 
 
 def snippets(page):
@@ -33,7 +36,7 @@ def snippets(page):
             "verify": attrs.get("verify", "run"),
             "reason": attrs.get("skip-reason", ""),
             "label": label.group(1) if label else "?",
-            "code": html_mod.unescape(code.group(1)) if code else "",
+            "code": html_mod.unescape(TAG.sub("", code.group(1))) if code else "",
         }
 
 

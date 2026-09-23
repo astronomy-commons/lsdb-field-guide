@@ -435,7 +435,7 @@ result = (
         </div>
         <pre><code>import pandas as pd
 
-frame = gaia.cone_search(ra=180.0, dec=10.0, radius_arcsec=600).compute()
+<span class="hot">frame = gaia.cone_search(ra=180.0, dec=10.0, radius_arcsec=600).compute()</span>
 
 isinstance(frame, pd.DataFrame)   # True
 frame.index.name                  # '_healpix_29'</code></pre>
@@ -487,7 +487,7 @@ data = {
 }
 table = Table(data)
 catalog = lsdb.from_astropy(table, ra_column="ra", dec_column="dec")
-catalog.head()
+<span class="hot">catalog.head()</span>
 
 # From here it is an ordinary LSDB catalog: crossmatch it against a survey,
 # filter it, or write it out. See Do for the recipes.</code></pre>
