@@ -149,6 +149,21 @@ ztf = lsdb.open_catalog(
 )</code></pre>
       </div>
 
+      <p>To keep the defaults and add to them, put <code>...</code> in the list. LSDB expands the
+         ellipsis in place to the catalog's default columns, skipping any you have already named,
+         so nothing arrives twice. One ellipsis per list.</p>
+
+      <div class="snippet" data-setup="ztf-loaded" data-verify="run">
+        <div class="snippet__bar">
+          <span class="snippet__label">python</span>
+        </div>
+        <pre><code># The defaults, plus the two columns that say which partition a row lives in.
+ztf = lsdb.open_catalog(
+    "https://data.lsdb.io/hats/ztf_dr14/ztf_object",
+    columns=[..., "Norder", "Npix"],
+)</code></pre>
+      </div>
+
       <p>If you really do want every column, <code>columns="all"</code> says so explicitly &mdash;
          which is the point. Loading all two hundred should be a decision, not an accident.</p>
 
